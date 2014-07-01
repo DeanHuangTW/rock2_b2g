@@ -5,8 +5,8 @@ sync_flags=""
 
 repo_sync() {
 	rm -rf .repo/manifest* &&
-	$REPO init -u $GITREPO -b $BRANCH -m $1.xml $REPO_INIT_FLAGS &&
-	$REPO sync $sync_flags $REPO_SYNC_FLAGS
+	$REPO init -u $GITREPO -b $BRANCH -m $1.xml &&
+	$REPO sync $sync_flags
 	ret=$?
 	if [ "$GITREPO" = "$GIT_TEMP_REPO" ]; then
 		rm -rf $GIT_TEMP_REPO
@@ -30,8 +30,10 @@ case `uname` in
 	exit -1
 esac
 
-GITREPO=${GITREPO:-"git://github.com/mozilla-b2g/b2g-manifest"}
-BRANCH=${BRANCH:-master}
+#GITREPO=${GITREPO:-"git://github.com/mozilla-b2g/b2g-manifest"}
+GITREPO=${GITREPO:-"git@github.com:apc-io/Vixen_manifests.git"}
+#GITREPO=${GITREPO:-"file:///home/dean/Desktop/ffos/b2g-manifest"}
+BRANCH=${BRANCH:-rock2}
 
 while [ $# -ge 1 ]; do
 	case $1 in
@@ -122,7 +124,7 @@ case "$1" in
 
 "flame")
 	echo PRODUCT_NAME=$1 >> .tmp-config &&
-       repo_sync $1
+	repo_sync $1
 	;;
 
 "fugu")
@@ -135,7 +137,7 @@ case "$1" in
 
 "tarako")
 	echo DEVICE=sp6821a_gonk >> .tmp-config &&
-	echo PRODUCT_NAME=sp6821a_gonk >> .tmp-config &&
+	echo LUNCH=sp6821a_gonk-userdebug >> .tmp-config &&
 	repo_sync $1
 	;;
 
@@ -145,22 +147,10 @@ case "$1" in
 	repo_sync $1
 	;;
 
-"dolphin")
-	echo DEVICE=scx15_sp7715ga >> .tmp-config &&
-	echo PRODUCT_NAME=scx15_sp7715gaplus >> .tmp-config &&
-	repo_sync $1
-	;;
-
 "pandaboard")
 	echo DEVICE=panda >> .tmp-config &&
 	repo_sync $1
 	;;
-
-"vixen")
-	echo DEVICE=vixen >> .tmp-config &&
-	echo PRODUCT_NAME=vixen >> .tmp-config &&
-	repo_sync $1
-	;;  
 
 "emulator"|"emulator-jb"|"emulator-kk")
 	echo DEVICE=generic >> .tmp-config &&
@@ -176,6 +166,13 @@ case "$1" in
 
 "flo")
 	echo DEVICE=flo >> .tmp-config &&
+	repo_sync $1
+	;;
+
+"vixen")
+	echo DEVICE=vixen >> .tmp-config &&
+	echo DEVICE_NAME=vixen >> .tmp-config &&
+	echo LUNCH=vixen-user >> .tmp-config &&
 	repo_sync $1
 	;;
 
@@ -204,9 +201,7 @@ case "$1" in
 	echo - fugu
 	echo - tarako
 	echo - tara
-	echo - dolphin
 	echo - pandaboard
-	echo - vixen
 	echo - flatfish
 	echo - flame
 	echo - emulator
